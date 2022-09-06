@@ -7,8 +7,20 @@ import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
+import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.async.methods.SimpleRequestBuilder;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.core5.http.ParseException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,6 +30,8 @@ public class TestHttp1xx {
     private static String CRLF = String.format("%c%c", 13, 10);
     private static String FINALMESSAGE = "HTTP/1.1 200 OK" + CRLF + "Content-Type: text/plain" + CRLF + "Content-Length: "
             + CONTENT.length() + CRLF + CRLF + CONTENT;
+    private static int PORT = 8080;
+    private static String URI = "http://localhost:" + PORT;
 
     private Thread createServer(int status, String reason, String fields) throws IOException {
         Runnable server = new Runnable() {
@@ -38,7 +52,7 @@ public class TestHttp1xx {
                     boolean up = false;
                     while (!up) {
                         try {
-                            serverSocket = new ServerSocket(8080);
+                            serverSocket = new ServerSocket(PORT);
                             up = true;
                         } catch (java.net.BindException ex) {
                             // ignored
@@ -77,7 +91,7 @@ public class TestHttp1xx {
 
     private void testHTTPURLConnection(Thread server) throws IOException, InterruptedException {
         try {
-            URL test = new URL("http://localhost:8080");
+            URL test = new URL(URI);
             HttpURLConnection c = (HttpURLConnection) test.openConnection();
 
             int status = c.getResponseCode();
@@ -95,12 +109,11 @@ public class TestHttp1xx {
 
     private void testApacheHttpClient4(Thread server) throws IOException, InterruptedException {
         try {
-            org.apache.http.impl.client.CloseableHttpClient client = org.apache.http.impl.client.HttpClientBuilder.create().build();
-            org.apache.http.client.methods.CloseableHttpResponse response = client
-                    .execute(new org.apache.http.client.methods.HttpGet("http://localhost:8080"));
+            CloseableHttpClient client = HttpClientBuilder.create().build();
+            CloseableHttpResponse response = client.execute(new HttpGet(URI));
 
             int status = response.getStatusLine().getStatusCode();
-            String body = org.apache.http.util.EntityUtils.toString(response.getEntity());
+            String body = EntityUtils.toString(response.getEntity());
 
             System.err.println("C: status: " + status);
             System.err.println("C: body: " + escapeLineEnds(body));
@@ -112,14 +125,17 @@ public class TestHttp1xx {
         }
     }
 
-    private void testApacheHttpClient5(Thread server) throws IOException, InterruptedException, ParseException {
+    private void testApacheHttpClient5(Thread server) throws IOException, InterruptedException, ParseException, ExecutionException {
         try {
-            org.apache.hc.client5.http.impl.classic.CloseableHttpClient client = org.apache.hc.client5.http.impl.classic.HttpClientBuilder.create().build();
-            org.apache.hc.client5.http.impl.classic.CloseableHttpResponse response = client
-                    .execute(new org.apache.hc.client5.http.classic.methods.HttpGet("http://localhost:8080"));
+            CloseableHttpAsyncClient client = HttpAsyncClients.createDefault();
+            client.start();
+
+            SimpleHttpRequest request = SimpleRequestBuilder.get(URI).build();
+            Future<SimpleHttpResponse> future = client.execute(request, null);
+            SimpleHttpResponse response = future.get();
 
             int status = response.getCode();
-            String body = org.apache.hc.core5.http.io.entity.EntityUtils.toString(response.getEntity());
+            String body = response.getBodyText();
 
             System.err.println("C: status: " + status);
             System.err.println("C: body: " + escapeLineEnds(body));
@@ -197,27 +213,27 @@ public class TestHttp1xx {
     }
 
     @Test
-    public void testApacheHttpClient5200() throws IOException, InterruptedException, ParseException {
+    public void testApacheHttpClient5200() throws IOException, InterruptedException, ParseException, ExecutionException {
         testApacheHttpClient5(create200Server());
     }
 
     @Test
-    public void testApacheHttpClient5100() throws IOException, InterruptedException, ParseException {
+    public void testApacheHttpClient5100() throws IOException, InterruptedException, ParseException, ExecutionException {
         testApacheHttpClient5(create100Server());
     }
 
     @Test
-    public void testApacheHttpClient5102() throws IOException, InterruptedException, ParseException {
+    public void testApacheHttpClient5102() throws IOException, InterruptedException, ParseException, ExecutionException {
         testApacheHttpClient5(create102Server());
     }
 
     @Test
-    public void testApacheHttpClient5103() throws IOException, InterruptedException, ParseException {
+    public void testApacheHttpClient5103() throws IOException, InterruptedException, ParseException, ExecutionException {
         testApacheHttpClient5(create103Server());
     }
 
     @Test
-    public void testApacheHttpClient5199() throws IOException, InterruptedException, ParseException {
+    public void testApacheHttpClient5199() throws IOException, InterruptedException, ParseException, ExecutionException {
         testApacheHttpClient5(create199Server());
     }
 
