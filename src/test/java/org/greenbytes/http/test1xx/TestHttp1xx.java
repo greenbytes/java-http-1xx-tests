@@ -12,9 +12,15 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.hc.client5.http.async.methods.SimpleRequestBuilder;
@@ -171,6 +177,26 @@ public class TestHttp1xx {
         }
     }
 
+    private void testOkHttpClient(Thread server) throws IOException, InterruptedException {
+        try {
+            OkHttpClient client = new OkHttpClient.Builder().protocols(List.of(Protocol.HTTP_1_1)).build();
+            Request request = new Request.Builder().url(TESTURI).get().build();
+            try (Response response = client.newCall(request).execute()) {
+
+                int status = response.code();
+                String body = response.body().string();
+
+                System.err.println("C: status: " + status);
+                System.err.println("C: body: " + escapeLineEnds(body));
+
+                Assert.assertEquals(CONTENT, body);
+                Assert.assertEquals(200, status);
+            }
+        } finally {
+            server.join();
+        }
+    }
+
     private Thread create100Server() throws IOException {
         return createServer(100, "Continue", null);
     }
@@ -289,6 +315,31 @@ public class TestHttp1xx {
     @Test
     public void testApacheHttpClient4200() throws IOException, InterruptedException {
         testApacheHttpClient4(create200Server());
+    }
+
+    @Test
+    public void testOkHttpClient100() throws IOException, InterruptedException {
+        testOkHttpClient(create100Server());
+    }
+
+    @Test
+    public void testOkHttpClient102() throws IOException, InterruptedException {
+        testOkHttpClient(create102Server());
+    }
+
+    @Test
+    public void testOkHttpClient103() throws IOException, InterruptedException {
+        testOkHttpClient(create103Server());
+    }
+
+    @Test
+    public void testOkHttpClient199() throws IOException, InterruptedException {
+        testOkHttpClient(create199Server());
+    }
+
+    @Test
+    public void testOkHttpClient200() throws IOException, InterruptedException {
+        testOkHttpClient(create200Server());
     }
 
     public static String readFully(InputStream is) throws IOException {
