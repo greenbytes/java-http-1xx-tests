@@ -8,11 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.core5.http.ParseException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -99,11 +95,31 @@ public class TestHttp1xx {
 
     private void testApacheHttpClient4(Thread server) throws IOException, InterruptedException {
         try {
-            CloseableHttpClient client = HttpClientBuilder.create().build();
-            CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8080"));
+            org.apache.http.impl.client.CloseableHttpClient client = org.apache.http.impl.client.HttpClientBuilder.create().build();
+            org.apache.http.client.methods.CloseableHttpResponse response = client
+                    .execute(new org.apache.http.client.methods.HttpGet("http://localhost:8080"));
 
             int status = response.getStatusLine().getStatusCode();
-            String body = EntityUtils.toString(response.getEntity());
+            String body = org.apache.http.util.EntityUtils.toString(response.getEntity());
+
+            System.err.println("C: status: " + status);
+            System.err.println("C: body: " + escapeLineEnds(body));
+
+            Assert.assertEquals(CONTENT, body);
+            Assert.assertEquals(200, status);
+        } finally {
+            server.join();
+        }
+    }
+
+    private void testApacheHttpClient5(Thread server) throws IOException, InterruptedException, ParseException {
+        try {
+            org.apache.hc.client5.http.impl.classic.CloseableHttpClient client = org.apache.hc.client5.http.impl.classic.HttpClientBuilder.create().build();
+            org.apache.hc.client5.http.impl.classic.CloseableHttpResponse response = client
+                    .execute(new org.apache.hc.client5.http.classic.methods.HttpGet("http://localhost:8080"));
+
+            int status = response.getCode();
+            String body = org.apache.hc.core5.http.io.entity.EntityUtils.toString(response.getEntity());
 
             System.err.println("C: status: " + status);
             System.err.println("C: body: " + escapeLineEnds(body));
@@ -178,6 +194,31 @@ public class TestHttp1xx {
     @Test
     public void testApacheHttpClient4199() throws IOException, InterruptedException {
         testApacheHttpClient4(create199Server());
+    }
+
+    @Test
+    public void testApacheHttpClient5200() throws IOException, InterruptedException, ParseException {
+        testApacheHttpClient5(create200Server());
+    }
+
+    @Test
+    public void testApacheHttpClient5100() throws IOException, InterruptedException, ParseException {
+        testApacheHttpClient5(create100Server());
+    }
+
+    @Test
+    public void testApacheHttpClient5102() throws IOException, InterruptedException, ParseException {
+        testApacheHttpClient5(create102Server());
+    }
+
+    @Test
+    public void testApacheHttpClient5103() throws IOException, InterruptedException, ParseException {
+        testApacheHttpClient5(create103Server());
+    }
+
+    @Test
+    public void testApacheHttpClient5199() throws IOException, InterruptedException, ParseException {
+        testApacheHttpClient5(create199Server());
     }
 
     @Test
