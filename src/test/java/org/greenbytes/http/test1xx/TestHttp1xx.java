@@ -6,7 +6,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -31,7 +36,7 @@ public class TestHttp1xx {
     private static String FINALMESSAGE = "HTTP/1.1 200 OK" + CRLF + "Content-Type: text/plain" + CRLF + "Content-Length: "
             + CONTENT.length() + CRLF + CRLF + CONTENT;
     private static int PORT = 8080;
-    private static String URI = "http://localhost:" + PORT;
+    private static String TESTURI = "http://localhost:" + PORT;
 
     private Thread createServer(int status, String reason, String fields) throws IOException {
         Runnable server = new Runnable() {
@@ -91,7 +96,7 @@ public class TestHttp1xx {
 
     private void testHTTPURLConnection(Thread server) throws IOException, InterruptedException {
         try {
-            URL test = new URL(URI);
+            URL test = new URL(TESTURI);
             HttpURLConnection c = (HttpURLConnection) test.openConnection();
 
             int status = c.getResponseCode();
@@ -107,10 +112,29 @@ public class TestHttp1xx {
         }
     }
 
+    private void testJDKHttpClient(Thread server) throws IOException, InterruptedException {
+        try {
+            HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(TESTURI)).GET().build();
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+
+            int status = response.statusCode();
+            String body = response.body();
+
+            System.err.println("C: status: " + status);
+            System.err.println("C: body: " + escapeLineEnds(body));
+
+            Assert.assertEquals(CONTENT, body);
+            Assert.assertEquals(200, status);
+        } finally {
+            server.join();
+        }
+    }
+
     private void testApacheHttpClient4(Thread server) throws IOException, InterruptedException {
         try {
             CloseableHttpClient client = HttpClientBuilder.create().build();
-            CloseableHttpResponse response = client.execute(new HttpGet(URI));
+            CloseableHttpResponse response = client.execute(new HttpGet(TESTURI));
 
             int status = response.getStatusLine().getStatusCode();
             String body = EntityUtils.toString(response.getEntity());
@@ -130,7 +154,7 @@ public class TestHttp1xx {
             CloseableHttpAsyncClient client = HttpAsyncClients.createDefault();
             client.start();
 
-            SimpleHttpRequest request = SimpleRequestBuilder.get(URI).build();
+            SimpleHttpRequest request = SimpleRequestBuilder.get(TESTURI).build();
             Future<SimpleHttpResponse> future = client.execute(request, null);
             SimpleHttpResponse response = future.get();
 
@@ -168,28 +192,53 @@ public class TestHttp1xx {
     }
 
     @Test
-    public void testHTTPRLConnection100() throws IOException, InterruptedException {
+    public void testHTTPURLConnection100() throws IOException, InterruptedException {
         testHTTPURLConnection(create100Server());
     }
 
     @Test
-    public void testHTTPRLConnection102() throws IOException, InterruptedException {
+    public void testHTTPURLConnection102() throws IOException, InterruptedException {
         testHTTPURLConnection(create102Server());
     }
 
     @Test
-    public void testHTTPRLConnection103() throws IOException, InterruptedException {
+    public void testHTTPURLConnection103() throws IOException, InterruptedException {
         testHTTPURLConnection(create103Server());
     }
 
     @Test
-    public void testHTTPRLConnection199() throws IOException, InterruptedException {
+    public void testHTTPURLConnection199() throws IOException, InterruptedException {
         testHTTPURLConnection(create199Server());
     }
 
     @Test
-    public void testHTTPRLConnection200() throws IOException, InterruptedException {
+    public void testHTTPURLConnection200() throws IOException, InterruptedException {
         testHTTPURLConnection(create200Server());
+    }
+
+    @Test
+    public void testJDKHttpClient100() throws IOException, InterruptedException {
+        testJDKHttpClient(create100Server());
+    }
+
+    @Test
+    public void testJDKHttpClient102() throws IOException, InterruptedException {
+        testJDKHttpClient(create102Server());
+    }
+
+    @Test
+    public void testJDKHttpClient103() throws IOException, InterruptedException {
+        testJDKHttpClient(create103Server());
+    }
+
+    @Test
+    public void testJDKHttpClient199() throws IOException, InterruptedException {
+        testJDKHttpClient(create199Server());
+    }
+
+    @Test
+    public void testJDKHttpClient200() throws IOException, InterruptedException {
+        testJDKHttpClient(create200Server());
     }
 
     @Test
