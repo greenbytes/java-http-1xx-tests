@@ -16,34 +16,31 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.hc.client5.http.async.methods.SimpleRequestBuilder;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.core5.http.ParseException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class TestHttp1xx {
 
-    private static String CONTENT = "Hello, world.";
+    protected static String CONTENT = "Hello, world.";
+
     private static String CRLF = String.format("%c%c", 13, 10);
     private static String FINALMESSAGE = "HTTP/1.1 200 OK" + CRLF + "Content-Type: text/plain" + CRLF + "Content-Length: "
             + CONTENT.length() + CRLF + CRLF + CONTENT;
     private static int PORT = 8080;
-    private static String TESTURI = "http://localhost:" + PORT;
 
+    protected static String TESTURI = "http://localhost:" + PORT;
+ 
     private Thread createServer(int status, String reason, String fields) throws IOException {
         Runnable server = new Runnable() {
             @Override
@@ -137,24 +134,6 @@ public class TestHttp1xx {
         }
     }
 
-    private void testApacheHttpClient4(Thread server) throws IOException, InterruptedException {
-        try {
-            CloseableHttpClient client = HttpClientBuilder.create().build();
-            CloseableHttpResponse response = client.execute(new HttpGet(TESTURI));
-
-            int status = response.getStatusLine().getStatusCode();
-            String body = EntityUtils.toString(response.getEntity());
-
-            System.err.println("C: status: " + status);
-            System.err.println("C: body: " + escapeLineEnds(body));
-
-            Assert.assertEquals(CONTENT, body);
-            Assert.assertEquals(200, status);
-        } finally {
-            server.join();
-        }
-    }
-
     private void testApacheHttpClient5(Thread server) throws IOException, InterruptedException, ParseException, ExecutionException {
         try {
             CloseableHttpAsyncClient client = HttpAsyncClients.createDefault();
@@ -197,23 +176,23 @@ public class TestHttp1xx {
         }
     }
 
-    private Thread create100Server() throws IOException {
+    protected Thread create100Server() throws IOException {
         return createServer(100, "Continue", null);
     }
 
-    private Thread create102Server() throws IOException {
+    protected Thread create102Server() throws IOException {
         return createServer(102, "Processing", "Status-URI: 404 <x>" + CRLF);
     }
 
-    private Thread create103Server() throws IOException {
+    protected Thread create103Server() throws IOException {
         return createServer(103, "Early Hint", "Link: </p>; rel=prefetch" + CRLF);
     }
 
-    private Thread create199Server() throws IOException {
+    protected Thread create199Server() throws IOException {
         return createServer(199, "", null);
     }
 
-    private Thread create200Server() throws IOException {
+    protected Thread create200Server() throws IOException {
         return createServer(-1, null, null);
     }
 
@@ -268,26 +247,6 @@ public class TestHttp1xx {
     }
 
     @Test
-    public void testApacheHttpClient4100() throws IOException, InterruptedException {
-        testApacheHttpClient4(create100Server());
-    }
-
-    @Test
-    public void testApacheHttpClient4102() throws IOException, InterruptedException {
-        testApacheHttpClient4(create102Server());
-    }
-
-    @Test
-    public void testApacheHttpClient4103() throws IOException, InterruptedException {
-        testApacheHttpClient4(create103Server());
-    }
-
-    @Test
-    public void testApacheHttpClient4199() throws IOException, InterruptedException {
-        testApacheHttpClient4(create199Server());
-    }
-
-    @Test
     public void testApacheHttpClient5200() throws IOException, InterruptedException, ParseException, ExecutionException {
         testApacheHttpClient5(create200Server());
     }
@@ -310,11 +269,6 @@ public class TestHttp1xx {
     @Test
     public void testApacheHttpClient5199() throws IOException, InterruptedException, ParseException, ExecutionException {
         testApacheHttpClient5(create199Server());
-    }
-
-    @Test
-    public void testApacheHttpClient4200() throws IOException, InterruptedException {
-        testApacheHttpClient4(create200Server());
     }
 
     @Test
@@ -372,7 +326,7 @@ public class TestHttp1xx {
         return new String(buffer.toByteArray());
     }
 
-    private static String escapeLineEnds(String s) {
+    protected static String escapeLineEnds(String s) {
         return s.replace("\r", "<CR>").replace("\n", "<LF>");
     }
 }
