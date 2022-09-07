@@ -9,13 +9,13 @@ We currently test with:
 - java.net.http.HttpClient (JDK 11)
 - Apache HttpClient 4
 - Apache HttpClient 5
-- OkHTTP
+- OkHttp
 
 Results:
 
 - Both JDK clients handle 1xx as final response, exposing the actual final response as response body (at least java.net.HttpURLConnection special-cases status code 100 correctly)
 - Same for OkHttp
-- The Apache HttpClient libraries work as specified (the newer one can expose the 1xx information, but that doesn't have test coverage yet)
+- The Apache HttpClient libraries work as specified (the newer one can expose the 1xx information)
 
 Bug Reports:
 
