@@ -6,21 +6,10 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class TestHttp1xx {
 
@@ -107,25 +96,6 @@ public class TestHttp1xx {
         }
     }
 
-    private void testJDKHttpClient(Thread server) throws IOException, InterruptedException {
-        try {
-            HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(TESTURI)).GET().build();
-            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-
-            int status = response.statusCode();
-            String body = response.body();
-
-            System.err.println("C: status: " + status);
-            System.err.println("C: body: " + escapeLineEnds(body));
-
-            Assert.assertEquals(CONTENT, body);
-            Assert.assertEquals(200, status);
-        } finally {
-            server.join();
-        }
-    }
-
     protected Thread create100Server() throws IOException {
         return createServer(100, "Continue", null);
     }
@@ -169,31 +139,6 @@ public class TestHttp1xx {
     @Test
     public void testHTTPURLConnection200() throws IOException, InterruptedException {
         testHTTPURLConnection(create200Server());
-    }
-
-    @Test
-    public void testJDKHttpClient100() throws IOException, InterruptedException {
-        testJDKHttpClient(create100Server());
-    }
-
-    @Test
-    public void testJDKHttpClient102() throws IOException, InterruptedException {
-        testJDKHttpClient(create102Server());
-    }
-
-    @Test
-    public void testJDKHttpClient103() throws IOException, InterruptedException {
-        testJDKHttpClient(create103Server());
-    }
-
-    @Test
-    public void testJDKHttpClient199() throws IOException, InterruptedException {
-        testJDKHttpClient(create199Server());
-    }
-
-    @Test
-    public void testJDKHttpClient200() throws IOException, InterruptedException {
-        testJDKHttpClient(create200Server());
     }
 
     public static String readFully(InputStream is) throws IOException {
