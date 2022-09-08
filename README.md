@@ -19,4 +19,5 @@ Results:
 
 Bug Reports:
 
-- java.net.HttpURLConnection: https://bugs.openjdk.org/browse/JDK-8170305
+- java.net.HttpURLConnection: https://bugs.openjdk.org/browse/JDK-8170305 (2016-11)
+- java.net.http.HttpClient: through https://bugreport.java.com, bug id https://bugreport.java.com (2022-09)
