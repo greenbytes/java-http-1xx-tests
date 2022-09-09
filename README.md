@@ -20,5 +20,5 @@ Results:
 Bug Reports:
 
 - java.net.HttpURLConnection: https://bugs.openjdk.org/browse/JDK-8170305 (2016-11)
-- java.net.http.HttpClient: through https://bugreport.java.com, bug id https://bugreport.java.com (2022-09)
-- OkHttp: https://github.com/square/okhttp/issues/7440
+- java.net.http.HttpClient: https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8293574 (2022-09)
+- OkHttp: https://github.com/square/okhttp/issues/7440, found to be a dupe of https://github.com/square/okhttp/issues/2257
