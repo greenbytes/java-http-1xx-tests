@@ -25,7 +25,7 @@ Bug Reports:
 
 Fixes in JDKs:
 
-| java.net.HttpURLConnection | java.net.http.HttpClient Header |
+| java.net.HttpURLConnection | java.net.http.HttpClient |
 | ------------- | ------------- |
 | JDK 8 :x:     | JDK 8 :x:   |
 | JDK 11 :x:    | JDK 11 :x:   |
