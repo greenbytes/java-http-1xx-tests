@@ -30,5 +30,5 @@ Fixes in JDKs:
 | JDK 8 :x:     | JDK 8 :x:   |
 | JDK 11 :x:    | JDK 11 :x:   |
 | JDK 17 :x:    | JDK 17 :x:   |
-| JDK 19 :x: (but see https://github.com/openjdk/jdk19u/pull/27)   | JDK 19 :x:   |
-| JDK 20 :heavy_check_mark: (build 20-ea+15-1019)   | JDK 20 :x: (but see https://github.com/openjdk/jdk/pull/10169) |
+| JDK 19 :x: (but see https://github.com/openjdk/jdk19u/pull/27) | JDK 19 :x:   |
+| JDK 20 :heavy_check_mark: (build 20-ea+15-1019) | :heavy_check_mark: (build 20-ea+17-1181) |
