@@ -20,7 +20,7 @@ Results:
 Bug Reports:
 
 - java.net.HttpURLConnection: https://bugs.openjdk.org/browse/JDK-8170305 (2016-11) - see https://github.com/openjdk/jdk/pull/10229 - fixed in JDK 20
-- java.net.http.HttpClient: https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8293574 (2022-09) - see https://github.com/openjdk/jdk/pull/10169 - fixed in JDK 20
+- java.net.http.HttpClient: https://bugs.java.com/bugdatabase/view_bug?bug_id=8293574 (2022-09) - see https://github.com/openjdk/jdk/pull/10169 - fixed in JDK 20
 - OkHttp: https://github.com/square/okhttp/issues/7440, found to be a dupe of https://github.com/square/okhttp/issues/2257
 
 Enhancement requests:
