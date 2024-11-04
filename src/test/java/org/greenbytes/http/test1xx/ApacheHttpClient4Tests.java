@@ -46,6 +46,21 @@ public class ApacheHttpClient4Tests extends TestHttp1xx {
     }
 
     @Test
+    public void testApacheHttpClient4104_1() throws IOException, InterruptedException {
+        testApacheHttpClient4(create104Server(1));
+    }
+
+    @Test
+    public void testApacheHttpClient4104_2() throws IOException, InterruptedException {
+        testApacheHttpClient4(create104Server(2));
+    }
+
+    @Test
+    public void testApacheHttpClient4104_100() throws IOException, InterruptedException {
+        testApacheHttpClient4(create104Server(100));
+    }
+
+    @Test
     public void testApacheHttpClient4199() throws IOException, InterruptedException {
         testApacheHttpClient4(create199Server());
     }

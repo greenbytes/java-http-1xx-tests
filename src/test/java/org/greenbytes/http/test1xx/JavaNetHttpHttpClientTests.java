@@ -47,6 +47,21 @@ public class JavaNetHttpHttpClientTests extends TestHttp1xx {
     }
 
     @Test
+    public void testJDKHttpClient104_1() throws IOException, InterruptedException {
+        testJavaNetHttpHttpClient(create104Server(1));
+    }
+
+    @Test
+    public void testJDKHttpClient104_2() throws IOException, InterruptedException {
+        testJavaNetHttpHttpClient(create104Server(2));
+    }
+
+    @Test
+    public void testJDKHttpClient104_100() throws IOException, InterruptedException {
+        testJavaNetHttpHttpClient(create104Server(100));
+    }
+
+    @Test
     public void testJDKHttpClient199() throws IOException, InterruptedException {
         testJavaNetHttpHttpClient(create199Server());
     }

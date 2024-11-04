@@ -18,6 +18,10 @@ public class TestHttp1xx {
     protected static String TESTURI = "http://localhost:" + PORT;
  
     private Thread createServer(int status, String reason, String fields) throws IOException {
+        return createServer(status, reason, fields,1);
+    }
+
+    private Thread createServer(int status, String reason, String fields, int times) throws IOException {
         Runnable server = new Runnable() {
             @Override
             public void run() {
@@ -25,11 +29,13 @@ public class TestHttp1xx {
                 try {
                     String response = "";
                     if (status >= 0) {
-                        response += "HTTP/1.1 " + status + " " + reason + CRLF;
-                        if (fields != null) {
-                            response += fields;
+                        for (int i = 0; i < times; i++) {
+                            response += "HTTP/1.1 " + status + " " + reason + CRLF;
+                            if (fields != null) {
+                                response += fields;
+                            }
+                            response += CRLF;
                         }
-                        response += CRLF;
                     }
                     response += FINALMESSAGE;
 
@@ -47,6 +53,8 @@ public class TestHttp1xx {
                             }
                         }
                     }
+                    System.err.println("");
+                    System.err.println("--- " + status + (times > 1 ? (" * " + times) : "") + " ---");
                     System.err.println("S: (ready)");
                     Socket clientSocket = serverSocket.accept();
                     String request = escapeLineEnds(readRequest(clientSocket.getInputStream()));
@@ -83,6 +91,10 @@ public class TestHttp1xx {
 
     protected Thread create103Server() throws IOException {
         return createServer(103, "Early Hint", "Link: </p>; rel=prefetch" + CRLF);
+    }
+
+    protected Thread create104Server(int times) throws IOException {
+        return createServer(104, "Upload Resumption Supported", "Upload-Offset: 50" + CRLF, times);
     }
 
     protected Thread create199Server() throws IOException {

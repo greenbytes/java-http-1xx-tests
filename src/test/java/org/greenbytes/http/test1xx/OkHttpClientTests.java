@@ -12,7 +12,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class OkHttpClientTests extends TestHttp1xx {
-    
+
     private void testOkHttpClient(Thread server) throws IOException, InterruptedException {
         try {
             OkHttpClient client = new OkHttpClient.Builder().protocols(List.of(Protocol.HTTP_1_1)).build();
@@ -46,6 +46,21 @@ public class OkHttpClientTests extends TestHttp1xx {
     @Test
     public void testOkHttpClient103() throws IOException, InterruptedException {
         testOkHttpClient(create103Server());
+    }
+
+    @Test
+    public void testOkHttpClient104_1() throws IOException, InterruptedException {
+        testOkHttpClient(create104Server(1));
+    }
+
+    @Test
+    public void testOkHttpClient104_2() throws IOException, InterruptedException {
+        testOkHttpClient(create104Server(2));
+    }
+
+    @Test
+    public void testOkHttpClient104_100() throws IOException, InterruptedException {
+        testOkHttpClient(create104Server(100));
     }
 
     @Test

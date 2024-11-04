@@ -43,6 +43,21 @@ public class JavaNetHTTPURLConnectionTests extends TestHttp1xx {
     }
 
     @Test
+    public void testHTTPURLConnection104_1() throws IOException, InterruptedException {
+        testHTTPURLConnection(create104Server(1));
+    }
+
+    @Test
+    public void testHTTPURLConnection104_2() throws IOException, InterruptedException {
+        testHTTPURLConnection(create104Server(2));
+    }
+
+    @Test
+    public void testHTTPURLConnection104_100() throws IOException, InterruptedException {
+        testHTTPURLConnection(create104Server(100));
+    }
+
+    @Test
     public void testHTTPURLConnection199() throws IOException, InterruptedException {
         testHTTPURLConnection(create199Server());
     }

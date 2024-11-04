@@ -160,6 +160,21 @@ public class ApacheHttpClient5Tests extends TestHttp1xx {
     }
 
     @Test
+    public void testApacheHttpClient4104_1() throws IOException, InterruptedException, ParseException, ExecutionException {
+        testApacheHttpClient5(create104Server(1), 104);
+    }
+
+    @Test
+    public void testApacheHttpClient4104_2() throws IOException, InterruptedException, ParseException, ExecutionException {
+        testApacheHttpClient5(create104Server(2), 104);
+    }
+
+    @Test
+    public void testApacheHttpClient4104_100() throws IOException, InterruptedException, ParseException, ExecutionException {
+        testApacheHttpClient5(create104Server(100), 104);
+    }
+
+   @Test
     public void testApacheHttpClient5199() throws IOException, InterruptedException, ParseException, ExecutionException {
         testApacheHttpClient5(create199Server(), 199);
     }
