@@ -13,7 +13,9 @@ We currently test with:
 
 Results:
 
-- Both JDK clients handle 1xx as final response, exposing the actual final response as response body (at least java.net.HttpURLConnection special-cases status code 100 correctly)
+- java.net.http.HttpClient works (in JDK 11, 17, and 21)
+- java.net.HttpURLConnection works (as of JDK 21), earlier versions fail
+Both JDK clients handle 1xx as final response, exposing the actual final response as response body (at least java.net.HttpURLConnection special-cases status code 100 correctly)
 - The Apache HttpClient libraries work as specified (the newer one can expose the 1xx information)
 - OkHttp fails to handle multiple informational messages
 
@@ -33,6 +35,6 @@ Fixes in JDKs:
 | java.net.HttpURLConnection | java.net.http.HttpClient |
 | ------------- | ------------- |
 | JDK 8 :x:     | JDK 8 :x:   |
-| JDK 11 :x:    | JDK 11 :x:   |
-| JDK 17 :x:    | JDK 17 :x:   |
+| JDK 11 :x:    | JDK 11 :heavy_check_mark: (as of 11.0.24)  |
+| JDK 17 :x:    | JDK 17 :heavy_check_mark: (as of 17.0.12) |
 | JDK 21 :heavy_check_mark: | :heavy_check_mark: |
