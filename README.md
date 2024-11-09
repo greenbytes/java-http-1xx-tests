@@ -37,3 +37,19 @@ Fixes in JDKs:
 | JDK 11 :x:    | JDK 11 :heavy_check_mark: (as of 11.0.24)  |
 | JDK 17 :x:    | JDK 17 :heavy_check_mark: (as of 17.0.12) |
 | JDK 21 :heavy_check_mark: | :heavy_check_mark: |
+
+## Summary of currently defined 1xx codes
+
+Note that although only few code points have been allocated (https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml),
+the default behavior for all codes except 100 and 101 is the same, so HTTP stacks can and should treat them uniformly.
+
+### 100 Continue
+
+### 101 Switching Protocols
+
+### 102 Processing
+
+### 103 Early Hints
+
+### 104 Upload Resumption Supported
+
