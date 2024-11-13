@@ -45,11 +45,33 @@ the default behavior for all codes except 100 and 101 is the same, so HTTP stack
 
 ### 100 Continue
 
+https://www.rfc-editor.org/rfc/rfc9110.html#status.100
+
+Special: in conjunction with https://www.rfc-editor.org/rfc/rfc9110.html#field.expect can be used to check that a request will be accepted by the server before sending the body.
+
 ### 101 Switching Protocols
+
+https://www.rfc-editor.org/rfc/rfc9110.html
+
+Special: for changing protocols; needs to be hard-wired into clients.
+
+#status.101
 
 ### 102 Processing
 
+http://webdav.org/specs/rfc2518.html#STATUS_102
+
+Designed for reporting progress for a long-running request; could be used by user-agent to keep the connection open and display progress.
+
 ### 103 Early Hints
+
+https://www.rfc-editor.org/rfc/rfc8297.html
+
+These reponses will contain "early hints", allowing a user-agent to start fetching related documents (for instance CSS) before the initial request is completed.
+
 
 ### 104 Upload Resumption Supported
 
+https://www.ietf.org/archive/id/draft-ietf-httpbis-resumable-upload-05.html
+
+Can be used to (a) indicate that resumable uploads are supported, and (b) to report progress.
