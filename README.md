@@ -51,11 +51,9 @@ Special: in conjunction with https://www.rfc-editor.org/rfc/rfc9110.html#field.e
 
 ### 101 Switching Protocols
 
-https://www.rfc-editor.org/rfc/rfc9110.html
+https://www.rfc-editor.org/rfc/rfc9110.html#status.101
 
 Special: for changing protocols; needs to be hard-wired into clients.
-
-#status.101
 
 ### 102 Processing
 
