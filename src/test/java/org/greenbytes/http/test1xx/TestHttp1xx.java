@@ -10,6 +10,11 @@ public class TestHttp1xx {
 
     protected static String CONTENT = "Hello, world.";
 
+    protected static final String ANSI_RESET = "\u001B[0m";
+    protected static final String ANSI_FAINT = "\u001B[2m";
+    protected static final String ANSI_BLUE = "\u001B[34m";
+    protected static final String ANSI_MAGENTA = "\u001B[35m";
+
     private static final String CRLF = String.format("%c%c", 13, 10);
     private static final String FINALMESSAGE = "HTTP/1.1 200 OK" + CRLF + "Content-Type: text/plain" + CRLF + "Content-Length: "
             + CONTENT.length() + CRLF + CRLF + CONTENT;
@@ -25,17 +30,16 @@ public class TestHttp1xx {
         Runnable server = () -> {
             ServerSocket serverSocket = null;
             try {
-                StringBuilder response = new StringBuilder();
+                StringBuilder wireResponse = new StringBuilder();
+                String statusLine = "HTTP/1.1 " + status + " " + reason + CRLF;
                 if (status >= 0) {
                     for (int i = 0; i < times; i++) {
-                        response.append("HTTP/1.1 " + status + " " + reason + CRLF);
-                        if (fields != null) {
-                            response.append(fields);
-                        }
-                        response.append(CRLF);
+                        wireResponse.append(statusLine);
+                        wireResponse.append(fields);
+                        wireResponse.append(CRLF);
                     }
                 }
-                response.append(FINALMESSAGE);
+                wireResponse.append(FINALMESSAGE);
 
                 boolean up = false;
                 while (!up) {
@@ -56,9 +60,9 @@ public class TestHttp1xx {
                 System.err.println("S: (ready)");
                 Socket clientSocket = serverSocket.accept();
                 String request = escapeLineEnds(readRequest(clientSocket.getInputStream()));
-                System.err.println("S: request: " + request);
-                clientSocket.getOutputStream().write(response.toString().getBytes());
-                System.err.println("S: response: " + escapeLineEnds(response.toString()));
+                System.err.println("S: request: " + ANSI_BLUE + request + ANSI_RESET);
+                clientSocket.getOutputStream().write(wireResponse.toString().getBytes());
+                System.err.println("S: response: " + ANSI_MAGENTA + escapeLineEnds(wireResponse.toString(), ANSI_FAINT, ANSI_RESET + ANSI_MAGENTA) + ANSI_RESET);
                 clientSocket.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -79,7 +83,7 @@ public class TestHttp1xx {
     }
 
     protected Thread create100Server() {
-        return createServer(100, "Continue", null);
+        return createServer(100, "Continue", "");
     }
 
     protected Thread create102Server() {
@@ -95,11 +99,11 @@ public class TestHttp1xx {
     }
 
     protected Thread create199Server() {
-        return createServer(199, "", null);
+        return createServer(199, "", "");
     }
 
     protected Thread create200Server() {
-        return createServer(-1, null, null);
+        return createServer(-1, null, "");
     }
 
     public static String readFully(InputStream is) throws IOException {
@@ -133,6 +137,10 @@ public class TestHttp1xx {
     }
 
     protected static String escapeLineEnds(String s) {
-        return s.replace("\r", "<CR>").replace("\n", "<LF>");
+        return escapeLineEnds(s, "", "");
+    }
+
+    protected static String escapeLineEnds(String s, String before, String after) {
+        return s.replace("\r", before + "<CR>" + after).replace("\n", before + "<LF>" + after);
     }
 }
