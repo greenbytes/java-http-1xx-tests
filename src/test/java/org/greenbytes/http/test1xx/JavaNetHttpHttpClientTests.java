@@ -19,13 +19,13 @@ public class JavaNetHttpHttpClientTests extends TestHttp1xx {
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
 
             int status = response.statusCode();
-            String body = response.body();
+            String content = response.body();
 
-            System.err.println("C: status: " + status);
-            System.err.println("C: body: " + escapeLineEnds(body));
+            logStatus(status, null);
+            logContent(content);
 
-            Assert.assertEquals(CONTENT, body);
             Assert.assertEquals(200, status);
+            Assert.assertEquals(CONTENT, content);
         } finally {
             server.join();
         }

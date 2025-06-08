@@ -20,13 +20,13 @@ public class OkHttpClientTests extends TestHttp1xx {
             try (Response response = client.newCall(request).execute()) {
 
                 int status = response.code();
-                String body = response.body().string();
+                String content = response.body().string();
 
-                System.err.println("C: status: " + status);
-                System.err.println("C: body: " + escapeLineEnds(body));
+                logStatus(status, response.message());
+                logContent(content);
 
-                Assert.assertEquals(CONTENT, body);
                 Assert.assertEquals(200, status);
+                Assert.assertEquals(CONTENT, content);
             }
         } finally {
             server.join();

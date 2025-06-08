@@ -17,13 +17,13 @@ public class ApacheHttpClient4Tests extends TestHttp1xx {
             CloseableHttpResponse response = client.execute(new HttpGet(TESTURI));
 
             int status = response.getStatusLine().getStatusCode();
-            String body = EntityUtils.toString(response.getEntity());
+            String content = EntityUtils.toString(response.getEntity());
 
-            System.err.println("C: status: " + status);
-            System.err.println("C: body: " + escapeLineEnds(body));
+            logStatus(status, response.getStatusLine().getReasonPhrase());
+            logContent(content);
 
-            Assert.assertEquals(CONTENT, body);
             Assert.assertEquals(200, status);
+            Assert.assertEquals(CONTENT, content);
         } finally {
             server.join();
         }

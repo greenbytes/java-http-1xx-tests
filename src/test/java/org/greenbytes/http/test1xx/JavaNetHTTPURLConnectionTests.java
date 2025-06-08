@@ -15,13 +15,13 @@ public class JavaNetHTTPURLConnectionTests extends TestHttp1xx {
             HttpURLConnection c = (HttpURLConnection) test.openConnection();
 
             int status = c.getResponseCode();
-            String body = readFully(c.getInputStream());
+            String content = readFully(c.getInputStream());
 
-            System.err.println("C: status: " + status);
-            System.err.println("C: body: " + escapeLineEnds(body));
+            logStatus(status, c.getResponseMessage());
+            logContent(content);
 
-            Assert.assertEquals(CONTENT, body);
             Assert.assertEquals(200, status);
+            Assert.assertEquals(CONTENT, content);
         } finally {
             server.join();
         }

@@ -48,7 +48,9 @@ public class ApacheHttpClient5Tests extends TestHttp1xx {
             final BasicRequestProducer requestProducer = new BasicRequestProducer(request, null);
 
             final AtomicInteger informationalStatus = new AtomicInteger();
+            final StringBuilder informationalReasonPhrase = new StringBuilder();
             final AtomicInteger finalStatus = new AtomicInteger();
+            final StringBuilder finalReasonPhrase = new StringBuilder();
             final ByteArrayOutputStream payload = new ByteArrayOutputStream();
 
             final CountDownLatch latch = new CountDownLatch(1);
@@ -87,12 +89,16 @@ public class ApacheHttpClient5Tests extends TestHttp1xx {
                 @Override
                 public void consumeInformation(final HttpResponse response, final HttpContext context) {
                     informationalStatus.set(response.getCode());
+                    informationalReasonPhrase.setLength(0);
+                    informationalReasonPhrase.append(response.getReasonPhrase());
+                    logIStatus(informationalStatus.get(), response.getReasonPhrase());
                 }
 
                 @Override
                 public void consumeResponse(final HttpResponse response, final EntityDetails entityDetails,
                         final HttpContext context) {
                     finalStatus.set(response.getCode());
+                    finalReasonPhrase.append(response.getReasonPhrase());
                 }
 
                 @Override
@@ -117,15 +123,13 @@ public class ApacheHttpClient5Tests extends TestHttp1xx {
 
             int istatus = informationalStatus.get();
             int status = finalStatus.get();
+            String reasonPhrase = finalReasonPhrase.toString();
 
             payload.flush();
             String body = payload.toString();
 
-            if (istatus != 0) {
-                System.err.println("C: istatus: " + istatus);
-            }
-            System.err.println("C: status: " + status);
-            System.err.println("C: body: " + escapeLineEnds(body));
+            logStatus(status, reasonPhrase);
+            logContent(body);
 
             if (expectedInformalStatus != -1) {
                 Assert.assertEquals(expectedInformalStatus, istatus);

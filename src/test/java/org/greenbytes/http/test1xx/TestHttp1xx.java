@@ -11,7 +11,9 @@ public class TestHttp1xx {
     protected static String CONTENT = "Hello, world.";
 
     protected static final String ANSI_RESET = "\u001B[0m";
+    protected static final String ANSI_BOLD = "\u001B[1m";
     protected static final String ANSI_FAINT = "\u001B[2m";
+    protected static final String ANSI_ITALIC = "\u001B[3m";
     protected static final String ANSI_RED = "\u001B[31m";
     protected static final String ANSI_BLUE = "\u001B[34m";
     protected static final String ANSI_MAGENTA = "\u001B[35m";
@@ -57,7 +59,7 @@ public class TestHttp1xx {
                     }
                 }
                 System.err.println();
-                System.err.println("--- " + status + (times > 1 ? (" * " + times) : "") + " ---");
+                System.err.println(ANSI_ITALIC + "--- Testing: " + status + (times > 1 ? (" * " + times) : "") + " ---" + ANSI_RESET);
                 System.err.println("S: (ready)");
                 serverSocket.setSoTimeout(2000);
                 Socket clientSocket = serverSocket.accept();
@@ -109,7 +111,7 @@ public class TestHttp1xx {
         return createServer(-1, null, "");
     }
 
-    public static String readFully(InputStream is) throws IOException {
+    protected static String readFully(InputStream is) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
         byte[] data = new byte[16384];
@@ -123,7 +125,7 @@ public class TestHttp1xx {
         return buffer.toString();
     }
 
-    public static String readRequest(InputStream is) throws IOException {
+    protected static String readRequest(InputStream is) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
         byte[] data = new byte[16384];
@@ -145,5 +147,17 @@ public class TestHttp1xx {
 
     protected static String escapeLineEnds(String s, String before, String after) {
         return s.replace("\r", before + "<CR>" + after).replace("\n", before + "<LF>" + after);
+    }
+
+    protected static void logStatus(int status, String reasonPhrase) {
+        System.err.println("C:  status: " + ANSI_BOLD + status + ANSI_RESET + " " + reasonPhrase);
+    }
+
+    protected static void logIStatus(int status, String reasonPhrase) {
+        System.err.println("C: istatus: " + ANSI_BOLD + status + ANSI_RESET + " " + reasonPhrase);
+    }
+
+    protected static void logContent(String content) {
+        System.err.println("C: content: " + escapeLineEnds(content));
     }
 }
