@@ -85,19 +85,18 @@ public class ApacheHttpClient5Tests extends TestHttp1xx {
                 }
 
                 @Override
-                public void consumeInformation(final HttpResponse response, final HttpContext context)
-                        throws HttpException, IOException {
+                public void consumeInformation(final HttpResponse response, final HttpContext context) {
                     informationalStatus.set(response.getCode());
                 }
 
                 @Override
                 public void consumeResponse(final HttpResponse response, final EntityDetails entityDetails,
-                        final HttpContext context) throws HttpException, IOException {
+                        final HttpContext context) {
                     finalStatus.set(response.getCode());
                 }
 
                 @Override
-                public void updateCapacity(final CapacityChannel capacityChannel) throws IOException {
+                public void updateCapacity(final CapacityChannel capacityChannel) {
                 }
 
                 @Override
@@ -108,7 +107,7 @@ public class ApacheHttpClient5Tests extends TestHttp1xx {
                 }
 
                 @Override
-                public void streamEnd(final List<? extends Header> trailers) throws HttpException, IOException {
+                public void streamEnd(final List<? extends Header> trailers) {
                 }
 
             });
@@ -120,7 +119,7 @@ public class ApacheHttpClient5Tests extends TestHttp1xx {
             int status = finalStatus.get();
 
             payload.flush();
-            String body = new String(payload.toByteArray());
+            String body = payload.toString();
 
             if (istatus != 0) {
                 System.err.println("C: istatus: " + istatus);

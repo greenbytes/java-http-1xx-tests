@@ -13,8 +13,7 @@ import org.junit.Test;
 public class ApacheHttpClient4Tests extends TestHttp1xx {
 
     private void testApacheHttpClient4(Thread server) throws IOException, InterruptedException {
-        try {
-            CloseableHttpClient client = HttpClientBuilder.create().build();
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
             CloseableHttpResponse response = client.execute(new HttpGet(TESTURI));
 
             int status = response.getStatusLine().getStatusCode();

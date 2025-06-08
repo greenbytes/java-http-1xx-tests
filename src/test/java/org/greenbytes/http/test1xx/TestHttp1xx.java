@@ -12,6 +12,7 @@ public class TestHttp1xx {
 
     protected static final String ANSI_RESET = "\u001B[0m";
     protected static final String ANSI_FAINT = "\u001B[2m";
+    protected static final String ANSI_RED = "\u001B[31m";
     protected static final String ANSI_BLUE = "\u001B[34m";
     protected static final String ANSI_MAGENTA = "\u001B[35m";
 
@@ -58,14 +59,16 @@ public class TestHttp1xx {
                 System.err.println();
                 System.err.println("--- " + status + (times > 1 ? (" * " + times) : "") + " ---");
                 System.err.println("S: (ready)");
+                serverSocket.setSoTimeout(2000);
                 Socket clientSocket = serverSocket.accept();
-                String request = escapeLineEnds(readRequest(clientSocket.getInputStream()));
-                System.err.println("S: request: " + ANSI_BLUE + request + ANSI_RESET);
+
+                String request = ANSI_BLUE + escapeLineEnds(readRequest(clientSocket.getInputStream()), ANSI_FAINT, ANSI_RESET + ANSI_BLUE) + ANSI_RESET;
+                System.err.println("S: request: " + request);
                 clientSocket.getOutputStream().write(wireResponse.toString().getBytes());
                 System.err.println("S: response: " + ANSI_MAGENTA + escapeLineEnds(wireResponse.toString(), ANSI_FAINT, ANSI_RESET + ANSI_MAGENTA) + ANSI_RESET);
                 clientSocket.close();
             } catch (IOException ex) {
-                ex.printStackTrace();
+                System.err.println("S: exception: " + ANSI_RED + ex.getMessage() + ANSI_RESET);
             } finally {
                 if (serverSocket != null) {
                     try {
