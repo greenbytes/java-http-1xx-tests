@@ -70,6 +70,7 @@ These reponses will contain "early hints", allowing a user-agent to start fetchi
 
 ### 104 Upload Resumption Supported
 
-https://www.ietf.org/archive/id/draft-ietf-httpbis-resumable-upload-05.html
+https://www.ietf.org/archive/id/draft-ietf-httpbis-resumable-upload-09.html
 
-Can be used to (a) indicate that resumable uploads are supported, and (b) to report progress.
+Can be used to (a) indicate that resumable uploads are supported, and (b) to report progress. Note that specifically for this code, the intermediate response can appear many times.
+
