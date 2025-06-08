@@ -1,5 +1,8 @@
 package org.greenbytes.http.test1xx;
 
+import org.junit.Rule;
+import org.junit.rules.TestName;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +27,10 @@ public class TestHttp1xx {
     private static final int PORT = 8080;
 
     protected static String TESTURI = "http://localhost:" + PORT;
- 
+
+    @Rule
+    public TestName name = new TestName();
+
     private Thread createServer(int status, String reason, String fields) {
         return createServer(status, reason, fields,1);
     }
@@ -59,7 +65,7 @@ public class TestHttp1xx {
                     }
                 }
                 System.err.println();
-                System.err.println(ANSI_ITALIC + "--- Testing: " + status + (times > 1 ? (" * " + times) : "") + " ---" + ANSI_RESET);
+                System.err.println(ANSI_ITALIC + "--- Testing: " + status + (times > 1 ? (" * " + times) : "") + " --- (" + name.getMethodName() + ")" + ANSI_RESET);
                 System.err.println("S: (ready)");
                 serverSocket.setSoTimeout(2000);
                 Socket clientSocket = serverSocket.accept();
