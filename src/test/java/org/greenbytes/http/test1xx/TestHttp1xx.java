@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 public class TestHttp1xx {
 
@@ -50,31 +52,39 @@ public class TestHttp1xx {
                 }
                 wireResponse.append(FINALMESSAGE);
 
-                boolean up = false;
-                while (!up) {
+                System.err.println();
+                System.err.println(ANSI_ITALIC + "--- Testing: " + status + (times > 1 ? (" * " + times) : "") + " --- (" + name.getMethodName() + ")" + ANSI_RESET);
+
+                long start = System.currentTimeMillis();
+                while (serverSocket == null) {
                     try {
                         serverSocket = new ServerSocket(PORT);
-                        up = true;
                     } catch (java.net.BindException ex) {
                         // ignored
                         try {
+                            if (System.currentTimeMillis() > start + TimeUnit.SECONDS.toMillis(10)) {
+                                System.err.println("S: (giving up)");
+                                throw new IllegalStateException("timeout trying to bind");
+                            }
+                            System.err.println("S: (trying to bind to port " + PORT + ")");
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
                 }
-                System.err.println();
-                System.err.println(ANSI_ITALIC + "--- Testing: " + status + (times > 1 ? (" * " + times) : "") + " --- (" + name.getMethodName() + ")" + ANSI_RESET);
+
                 System.err.println("S: (ready)");
-                serverSocket.setSoTimeout(2000);
+                serverSocket.setSoTimeout((int)TimeUnit.SECONDS.toMillis(2));
                 Socket clientSocket = serverSocket.accept();
 
-                String request = ANSI_BLUE + escapeLineEnds(readRequest(clientSocket.getInputStream()), ANSI_FAINT, ANSI_RESET + ANSI_BLUE) + ANSI_RESET;
-                System.err.println("S: request: " + request);
-                clientSocket.getOutputStream().write(wireResponse.toString().getBytes());
-                System.err.println("S: response: " + ANSI_MAGENTA + escapeLineEnds(wireResponse.toString(), ANSI_FAINT, ANSI_RESET + ANSI_MAGENTA) + ANSI_RESET);
-                clientSocket.close();
+                try (InputStream is = clientSocket.getInputStream()) {
+                    String request = ANSI_BLUE + escapeLineEnds(readRequest(is), ANSI_FAINT, ANSI_RESET + ANSI_BLUE) + ANSI_RESET;
+                    System.err.println("S: request: " + request);
+                    clientSocket.getOutputStream().write(wireResponse.toString().getBytes());
+                    System.err.println("S: response: " + ANSI_MAGENTA + escapeLineEnds(wireResponse.toString(), ANSI_FAINT, ANSI_RESET + ANSI_MAGENTA) + ANSI_RESET);
+                    clientSocket.close();
+                }
             } catch (IOException ex) {
                 System.err.println("S: exception: " + ANSI_RED + ex.getMessage() + ANSI_RESET);
             } finally {
@@ -118,17 +128,7 @@ public class TestHttp1xx {
     }
 
     protected static String readFully(InputStream is) throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nRead;
-        byte[] data = new byte[16384];
-
-        while ((nRead = is.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-
-        buffer.flush();
-
-        return buffer.toString();
+        return new String(is.readAllBytes(), StandardCharsets.UTF_8);
     }
 
     protected static String readRequest(InputStream is) throws IOException {
