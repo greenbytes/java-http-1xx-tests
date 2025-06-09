@@ -1,6 +1,7 @@
 package org.greenbytes.http.test1xx;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -15,7 +16,11 @@ public class JavaNetHTTPURLConnectionTests extends TestHttp1xx {
             HttpURLConnection c = (HttpURLConnection) test.openConnection();
 
             int status = c.getResponseCode();
-            String content = readFully(c.getInputStream());
+            String content = "";
+
+            try (InputStream is = c.getInputStream()) {
+                content = readFully(is);
+            }
 
             logStatus(status, c.getResponseMessage());
             logContent(content);
