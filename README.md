@@ -13,21 +13,21 @@ We currently test with:
 
 Test overview:
 
-| Client/Test                               | 100 | 102 | 103 | 104 | 104 x 2            | 104 x 100                                                                                                   | 199                 | 200 | 1xx receipts reported                                 |
-|-------------------------------------------|-----|-----|---- |-----|--------------------|-------------------------------------------------------------------------------------------------------------|---------------------| --- |-------------------------------------------------------|
-| java.net.HttpURLConnection (Java 8 .. 17) | :heavy_check_mark: | :x: | :x: | :x: | :x:                | :x:                                                                                                         | :x:                 | :heavy_check_mark: | :x:                                                   |
-| java.net.HttpURLConnection (Java 21)      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:                                                                                          | :heavy_check_mark:  | :heavy_check_mark: | :x:                                                   |
+| Client/Test                               | 100 | 102 | 103 | 104 | 104 x 2 | 104 x 100                                                                                              | 199                 | 200 | 1xx receipts reported                                 |
+|-------------------------------------------|-----|-----|---- |-----|-----|--------------------------------------------------------------------------------------------------------|---------------------| --- |-------------------------------------------------------|
+| java.net.HttpURLConnection (Java 8 .. 17) | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x:                                                                                                    | :x:                 | :heavy_check_mark: | :x:                                                   |
+| java.net.HttpURLConnection (Java 21)      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:                                                                                     | :heavy_check_mark:  | :heavy_check_mark: | :x:                                                   |
 | java.net.http.HttpClient                  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: (requires system property to be set to override the default limit of eight 1xx responses) | :heavy_check_mark:  | :heavy_check_mark: | :x: (see https://bugs.openjdk.org/browse/JDK-8294196) |
-| Apache HttpClient 4                       | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:                                                                                          | :heavy_check_mark:  | :heavy_check_mark: | :x:                                                   |
-| Apache HttpClient 5                       | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:                                                                                          | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:                                    |
-| OkHttp 4                                  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x:                | :x:                                                                                                         | :heavy_check_mark:  | :heavy_check_mark: | :x:                                                   |
+| Apache HttpClient 4                       | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:                                                                                     | :heavy_check_mark:  | :heavy_check_mark: | :x:                                                   |
+| Apache HttpClient 5                       | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:                                                                                     | :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark:                                    |
+| OkHttp 5                                  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:                                                                                     | :heavy_check_mark:  | :heavy_check_mark: | :x:                                                   |
 
 Results:
 
 - java.net.http.HttpClient works (in JDK 11, 17, and 21), but is limited to 8 1xx responses - that default can be overridden with https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/module-summary.html#jdk.httpclient.maxNonFinalResponses
 - java.net.HttpURLConnection works (as of JDK 21), earlier versions fail (though special-cases status code 100 correctly)
 - The Apache HttpClient libraries work as specified (HttpClient 5 even exposes the 1xx responses to the client)
-- OkHttp fails to handle multiple informational messages
+- OkHttp works (earlier versions failed to handle multiple informational messages)
 
 
 Bug Reports:
