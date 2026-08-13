@@ -38,7 +38,7 @@ Bug Reports:
 - java.net.http.HttpClient: https://bugs.java.com/bugdatabase/view_bug?bug_id=8293574 (2022-09) - see https://github.com/openjdk/jdk/pull/10169 - fixed in JDK 20, backported to JDKs 11 and 17
 - OkHttp: https://github.com/square/okhttp/issues/7440 (fixed in latest 4.x version), found to be a dupe of https://github.com/square/okhttp/issues/2257
 - OkHttp: multiple 1xx responses: https://github.com/square/okhttp/issues/8568
-- Jetty: https://github.com/jetty/jetty.project/issues/15575 (with rough patch available: https://github.com/user-attachments/files/31022510/fix1xx.patch
+- Jetty: https://github.com/jetty/jetty.project/issues/15575 (with rough patch available: https://github.com/user-attachments/files/31022510/fix1xx.patch), but so far the developers are not convinced that there actually is a problem.
 
 Enhancement requests:
 
